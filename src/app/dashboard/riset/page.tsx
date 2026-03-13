@@ -1,5 +1,5 @@
 "use client";
-export const dynamic = "force-static"; 
+export const dynamic = "force-dynamic"; 
 import { Suspense } from "react";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";

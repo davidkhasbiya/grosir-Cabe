@@ -1,5 +1,5 @@
 // app/api/chat/route.ts
-export const dynamic = "force-static"; // Agar tidak error GROQ_API_KEY missing
+export const dynamic = "force-dynamic"; // Agar tidak error GROQ_API_KEY missing
 import { NextResponse } from 'next/server';
 import Groq from 'groq-sdk';
 

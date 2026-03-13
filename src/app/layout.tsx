@@ -1,13 +1,16 @@
-import type { Metadata } from "next";
-import "./globals.css"; // <--- INI WAJIB ADA!
+import "./globals.css";
 import AiWrapper from "@/components/AiWrapper";
+import { ThemeProvider } from "next-themes";
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="id">
+    // Tambahkan suppressHydrationWarning di sini
+    <html lang="id" suppressHydrationWarning>
       <body>
-        {children}
-        <AiWrapper/>
+        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+          {children}
+          <AiWrapper />
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -1,8 +1,8 @@
 "use client";
 import { X, ShoppingBag, Trash2, Plus, Minus } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { Button } from "./ui/button";
 import { useState } from "react";
+import { cn } from "@/lib/utils";
 
 export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
     const router = useRouter();
@@ -11,95 +11,79 @@ export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean, onClo
         { id: 2, nama: "Cabai Hijau Besar", daerah: "Brebes", harga: 22000, qty: 500, unit: "Kg" },
     ]);
 
-    // 1. FUNGSI HAPUS ITEM
-    const removeItem = (id: number) => {
-        setItems(prev => prev.filter(item => item.id !== id));
-    };
-
+    const removeItem = (id: number) => setItems(prev => prev.filter(item => item.id !== id));
     const updateQty = (id: number, delta: number) => {
-        setItems(prev => prev.map(item =>
-            item.id === id ? { ...item, qty: Math.max(1, item.qty + delta) } : item
-        ));
+        setItems(prev => prev.map(item => item.id === id ? { ...item, qty: Math.max(1, item.qty + delta) } : item));
     };
 
     if (!isOpen) return null;
 
     const subtotal = items.reduce((acc, item) => acc + (item.harga * item.qty), 0);
-    const biayaKirim = items.length > 0 ? 400000 : 0; // Biaya kirim jadi 0 jika keranjang kosong
+    const biayaKirim = items.length > 0 ? 400000 : 0;
     const totalEstimasi = subtotal + biayaKirim;
 
     return (
         <div className="fixed inset-0 z-[100] flex justify-end">
-            <div className="absolute inset-0 bg-stone-950/40 backdrop-blur-[2px]" onClick={onClose} />
-            <div className="relative z-[110] w-full max-w-md bg-white h-full p-8 flex flex-col shadow-2xl animate-in slide-in-from-right duration-300">
+            <div className="absolute inset-0 bg-background/60 backdrop-blur-sm" onClick={onClose} />
+            <div className="relative z-[110] w-full max-w-md bg-background h-full p-8 flex flex-col shadow-2xl animate-in slide-in-from-right duration-300 border-l border-border">
                 <div className="flex justify-between items-center mb-8">
-                    <h2 className="text-2xl font-serif font-bold">Keranjang Belanja</h2>
-                    <button onClick={onClose} className="p-2 hover:bg-stone-100 rounded-full transition-colors"><X size={20} /></button>
+                    <h2 className="text-2xl font-serif font-bold text-foreground">Keranjang Belanja</h2>
+                    <button onClick={onClose} className="p-2 hover:bg-secondary rounded-full transition-colors"><X size={20} /></button>
                 </div>
 
                 <div className="flex-1 overflow-y-auto space-y-4 pr-2">
                     {items.length > 0 ? (
                         items.map((item) => (
-                            <div key={item.id} className="p-5 rounded-[2rem] border border-stone-100 bg-stone-50/30 space-y-4">
+                            <div key={item.id} className="p-5 rounded-[2rem] border border-border bg-card/50 space-y-4">
                                 <div className="flex gap-4">
-                                    <div className="w-14 h-14 bg-red-100 rounded-2xl flex items-center justify-center shrink-0 overflow-hidden">
-                                        {/* Opsional: Pakai gambar cabai jika ingin lebih visual */}
-                                        <ShoppingBag className="text-red-600" size={20} />
+                                    <div className="w-14 h-14 bg-secondary rounded-2xl flex items-center justify-center shrink-0">
+                                        <ShoppingBag className="text-primary" size={20} />
                                     </div>
                                     <div className="flex-1">
-                                        <p className="font-bold text-sm">{item.nama}</p>
-                                        <p className="text-[10px] text-stone-400 font-bold uppercase">{item.daerah}</p>
+                                        <p className="font-bold text-sm text-foreground">{item.nama}</p>
+                                        <p className="text-[10px] text-muted-foreground font-bold uppercase">{item.daerah}</p>
                                     </div>
-                                    
-                                    {/* 2. PASANG FUNGSI HAPUS DI SINI */}
-                                    <button 
-                                        onClick={() => removeItem(item.id)}
-                                        className="text-stone-300 hover:text-red-600 transition-colors p-1"
-                                    >
+                                    <button onClick={() => removeItem(item.id)} className="text-muted-foreground hover:text-destructive transition-colors p-1">
                                         <Trash2 size={16} />
                                     </button>
                                 </div>
-
                                 <div className="flex justify-between items-center">
-                                    <div className="flex items-center gap-1 bg-white border border-stone-100 rounded-xl p-1 shadow-sm">
-                                        <button onClick={() => updateQty(item.id, -50)} className="w-8 h-8 flex items-center justify-center hover:bg-stone-50 rounded-lg text-stone-400"><Minus size={14} /></button>
+                                    <div className="flex items-center gap-1 bg-background border border-border rounded-xl p-1 shadow-sm">
+                                        <button onClick={() => updateQty(item.id, -50)} className="w-8 h-8 flex items-center justify-center hover:bg-secondary rounded-lg text-muted-foreground"><Minus size={14} /></button>
                                         <span className="text-xs font-bold px-2 min-w-[70px] text-center">{item.qty} {item.unit}</span>
-                                        <button onClick={() => updateQty(item.id, 50)} className="w-8 h-8 flex items-center justify-center hover:bg-stone-50 rounded-lg text-stone-400"><Plus size={14} /></button>
+                                        <button onClick={() => updateQty(item.id, 50)} className="w-8 h-8 flex items-center justify-center hover:bg-secondary rounded-lg text-muted-foreground"><Plus size={14} /></button>
                                     </div>
-                                    <p className="font-bold text-sm text-red-600">Rp {(item.harga * item.qty).toLocaleString()}</p>
+                                    <p className="font-bold text-sm text-primary">Rp {(item.harga * item.qty).toLocaleString()}</p>
                                 </div>
                             </div>
                         ))
                     ) : (
-                        <div className="flex flex-col items-center justify-center h-64 text-stone-400 space-y-2">
+                        <div className="flex flex-col items-center justify-center h-64 text-muted-foreground space-y-2">
                             <ShoppingBag size={48} className="opacity-20" />
                             <p className="font-medium">Keranjangmu masih kosong</p>
                         </div>
                     )}
                 </div>
 
-                {/* Footer Transaksi */}
-                <div className="pt-6 border-t border-stone-100 mt-auto space-y-4">
+                <div className="pt-6 border-t border-border mt-auto space-y-4">
                     <div className="space-y-2 text-sm">
-                        <div className="flex justify-between text-stone-500">
+                        <div className="flex justify-between text-muted-foreground">
                             <span>Subtotal</span>
                             <span>Rp {subtotal.toLocaleString()}</span>
                         </div>
-                        <div className="flex justify-between text-stone-500">
+                        <div className="flex justify-between text-muted-foreground">
                             <span>Estimasi Ongkir</span>
                             <span>Rp {biayaKirim.toLocaleString()}</span>
                         </div>
                     </div>
-                    
-                    <div className="flex justify-between font-bold text-xl border-t border-stone-50 pt-4">
+                    <div className="flex justify-between font-bold text-xl border-t border-border pt-4">
                         <span>Total</span>
-                        <span className="text-red-600">Rp {totalEstimasi.toLocaleString()}</span>
+                        <span className="text-primary">Rp {totalEstimasi.toLocaleString()}</span>
                     </div>
-
                     <button
                         type="button"
                         disabled={items.length === 0}
-                        className="w-full h-14 bg-stone-950 text-white rounded-2xl font-bold hover:bg-red-600 disabled:bg-stone-200 disabled:cursor-not-allowed transition-all"
+                        className="w-full h-14 bg-foreground text-background rounded-2xl font-bold hover:bg-foreground/90 disabled:bg-muted disabled:cursor-not-allowed transition-all"
                         onClick={(e) => {
                             e.stopPropagation();
                             onClose();
@@ -110,6 +94,6 @@ export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean, onClo
                     </button>
                 </div>
             </div>
-        </div >
+        </div>
     );
 }
